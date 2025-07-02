@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUD Currency Converter</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .content { padding: 25px; }
+        
+        .section { margin-bottom: 25px; }
+        
+        .label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+        }
+        
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .btn {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-height: 70px;
+        }
+        
+        .btn:hover {
+            border-color: #9ca3af;
+            transform: translateY(-2px);
+        }
+        
+        .btn.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+        
+        .btn.travel {
+            border-color: #10b981;
+            background: #ecfdf5;
+            color: #065f46;
+        }
+        
+        .btn.travel.selected {
+            border-color: #059669;
+            background: #d1fae5;
+        }
+        
+        .code { font-size: 16px; font-weight: 700; }
+        .name { font-size: 12px; color: #6b7280; margin-top: 2px; }
+        
+        .search {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+        
+        .search:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+        
+        .results {
+            margin-top: 8px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .result-item {
+            display: flex;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .result-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 12px;
+            text-align: left;
+            cursor: pointer;
+        }
+        
+        .result-btn:hover { background: #f9fafb; }
+        
+        .actions {
+            display: flex;
+            gap: 6px;
+            padding: 8px;
+        }
+        
+        .action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .travel-btn {
+            background: #ecfdf5;
+            color: #065f46;
+        }
+        
+        .fav-btn {
+            background: #f3e8ff;
+            color: #7c3aed;
+        }
+        
+        .direction {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .amount {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        .result-box {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .result-amount {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .result-details {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .rate-info {
+            text-align: center;
+            color: #6b7280;
+            margin: 15px 0;
+        }
+        
+        .refresh {
+            background: #f3f4f6;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .favorites {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .fav-item {
+            display: flex;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .fav-select {
+            flex: 1;
+            background: white;
+            border: none;
+            padding: 12px;
+            cursor: pointer;
+        }
+        
+        .fav-select.selected {
+            background: #f3e8ff;
+            color: #7c3aed;
+        }
+        
+        .fav-remove {
+            background: #fef2f2;
+            border: none;
+            color: #dc2626;
+            padding: 12px 8px;
+            cursor: pointer;
+        }
+        
+        .hidden { display: none; }
+        
+        .show-btn {
+            background: none;
+            border: none;
+            color: #3b82f6;
+            cursor: pointer;
+            float: right;
+        }
+        
+        .error {
+            background: #fef3cd;
+            border: 1px solid #f6e05e;
+            color: #92400e;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 AUD Currency Converter</h1>
+        </div>
+        
+        <div class="content">
+            <div id="error" class="error hidden"></div>
+            
+            <!-- Quick Buttons -->
+            <div class="section">
+                <div class="label">Quick Select</div>
+                <div class="button-grid" id="quick-buttons"></div>
+            </div>
+            
+            <!-- Favorites -->
+            <div id="favorites-section" class="section hidden">
+                <div class="label">
+                    Favorites 
+                    <button id="toggle-fav" class="show-btn">Show</button>
+                </div>
+                <div id="favorites-list" class="favorites hidden"></div>
+            </div>
+            
+            <!-- Search -->
+            <div class="section">
+                <div class="label">Search Currencies</div>
+                <input type="text" id="search" class="search" placeholder="Search currencies...">
+                <div id="search-results" class="results hidden"></div>
+            </div>
+            
+            <!-- Direction -->
+            <div class="section" style="text-align: center;">
+                <button id="direction" class="direction">USD → AUD</button>
+            </div>
+            
+            <!-- Amount -->
+            <div class="section">
+                <div class="label" id="amount-label">Amount (USD)</div>
+                <input type="number" id="amount" class="amount" value="1">
+            </div>
+            
+            <!-- Result -->
+            <div class="result-box">
+                <div class="result-amount" id="result">$0.67 AUD</div>
+                <div class="result-details" id="details">$1.00 USD = $0.67 AUD</div>
+            </div>
+            
+            <div class="rate-info" id="rate-info">1 AUD = $0.67 USD</div>
+            
+            <button id="refresh" class="refresh">🔄 Refresh Rates</button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let rates = {};
+        let selectedCurrency = 'USD';
+        let convertToAUD = true;
+        let amount = 1;
+        let currentTravelCurrency = localStorage.getItem('currentTravelCurrency') || null;
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        let showFavorites = false;
+
+        const mainCurrencies = ['USD', 'EUR', 'GBP'];
+        
+        const allCurrencies = {
+            'USD': 'US Dollar', 'EUR': 'Euro', 'GBP': 'British Pound',
+            'KES': 'Kenyan Shilling', 'TZS': 'Tanzanian Shilling',
+            'JPY': 'Japanese Yen', 'CAD': 'Canadian Dollar', 'NZD': 'New Zealand Dollar',
+            'CHF': 'Swiss Franc', 'CNY': 'Chinese Yuan', 'INR': 'Indian Rupee',
+            'SGD': 'Singapore Dollar', 'HKD': 'Hong Kong Dollar', 'THB': 'Thai Baht',
+            'MYR': 'Malaysian Ringgit', 'KRW': 'South Korean Won', 'IDR': 'Indonesian Rupiah',
+            'PHP': 'Philippine Peso', 'VND': 'Vietnamese Dong', 'NOK': 'Norwegian Krone',
+            'SEK': 'Swedish Krona', 'DKK': 'Danish Krone', 'PLN': 'Polish Zloty',
+            'CZK': 'Czech Koruna', 'HUF': 'Hungarian Forint', 'RUB': 'Russian Ruble',
+            'BRL': 'Brazilian Real', 'MXN': 'Mexican Peso', 'ARS': 'Argentine Peso',
+            'CLP': 'Chilean Peso', 'COP': 'Colombian Peso', 'PEN': 'Peruvian Sol',
+            'ZAR': 'South African Rand', 'EGP': 'Egyptian Pound', 'AED': 'UAE Dirham',
+            'SAR': 'Saudi Riyal', 'QAR': 'Qatari Riyal', 'KWD': 'Kuwaiti Dinar',
+            'BHD': 'Bahraini Dinar', 'OMR': 'Omani Rial', 'JOD': 'Jordanian Dinar',
+            'LBP': 'Lebanese Pound', 'TRY': 'Turkish Lira', 'ILS': 'Israeli Shekel'
+        };
+        
+        const currencySymbols = {
+            USD: '$', EUR: '€', GBP: '£', JPY: '¥', AUD: '$',
+            CAD: '$', NZD: '$', CHF: 'CHF', CNY: '¥', INR: '₹',
+            SGD: '$', HKD: '$', THB: '฿', MYR: 'RM', KRW: '₩',
+            KES: 'KSh', TZS: 'TSh', IDR: 'Rp', PHP: '₱',
+            VND: '₫', NOK: 'kr', SEK: 'kr', DKK: 'kr',
+            PLN: 'zł', CZK: 'Kč', HUF: 'Ft', RUB: '₽',
+            BRL: 'R$', MXN: '$', ARS: '$', CLP: '$', COP: '$',
+            PEN: 'S/', ZAR: 'R', EGP: '£', AED: 'د.إ', SAR: '﷼',
+            QAR: '﷼', KWD: 'د.ك', BHD: '.د.ب', OMR: '﷼', JOD: 'د.ا',
+            LBP: '£', TRY: '₺', ILS: '₪'
+        };
+
+        // Functions
+        async function fetchRates() {
+            try {
+                const response = await fetch('https://open.er-api.com/v6/latest/AUD');
+                if (!response.ok) throw new Error('API failed');
+                
+                const data = await response.json();
+                rates = data.rates;
+                hideError();
+                console.log('✅ Live rates loaded');
+            } catch (error) {
+                console.log('❌ Using fallback rates');
+                showError('Live rates unavailable. Using recent approximate values.');
+                rates = {
+                    USD: 0.665, EUR: 0.615, GBP: 0.515, KES: 155, TZS: 1650,
+                    JPY: 98, CAD: 0.91, NZD: 1.09, CHF: 0.58, CNY: 4.82,
+                    INR: 55.8, SGD: 0.89, HKD: 5.22, THB: 23.5, MYR: 3.12,
+                    KRW: 886, IDR: 10420, PHP: 39.2, VND: 16850, NOK: 7.12,
+                    SEK: 7.08, DKK: 4.55, PLN: 2.67, CZK: 15.2, HUF: 251,
+                    RUB: 61.8, BRL: 4.02, MXN: 12.1, ARS: 1018, CLP: 652,
+                    COP: 2891, PEN: 2.51, ZAR: 12.2, EGP: 33.1, AED: 2.46,
+                    SAR: 2.51, QAR: 2.44, KWD: 0.20, BHD: 0.25, OMR: 0.26,
+                    JOD: 0.47, LBP: 60150, TRY: 22.8, ILS: 2.48
+                };
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('error').textContent = message;
+            document.getElementById('error').classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('error').classList.add('hidden');
+        }
+
+        function formatCurrency(value, currencyCode) {
+            const symbol = currencySymbols[currencyCode] || currencyCode;
+            const num = parseFloat(value);
+            return `${symbol} ${num.toFixed(2)}`;
+        }
+
+        function getConversionResult() {
+            if (!rates[selectedCurrency]) return 0;
+            
+            if (convertToAUD) {
+                return (amount / rates[selectedCurrency]).toFixed(2);
+            } else {
+                return (amount * rates[selectedCurrency]).toFixed(2);
+            }
+        }
+
+        function selectCurrency(currency) {
+            selectedCurrency = currency;
+            document.getElementById('search').value = '';
+            document.getElementById('search-results').classList.add('hidden');
+            render();
+        }
+
+        function setAsCurrentTravel(currency) {
+            if (currentTravelCurrency && !favorites.includes(currentTravelCurrency)) {
+                favorites.push(currentTravelCurrency);
+            }
+            currentTravelCurrency = currency;
+            selectedCurrency = currency;
+            localStorage.setItem('currentTravelCurrency', currency);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            document.getElementById('search').value = '';
+            document.getElementById('search-results').classList.add('hidden');
+            render();
+        }
+
+        function addToFavorites(currency) {
+            if (!favorites.includes(currency)) {
+                favorites.push(currency);
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+            }
+            document.getElementById('search').value = '';
+            document.getElementById('search-results').classList.add('hidden');
+            render();
+        }
+
+        function removeFromFavorites(currency) {
+            favorites = favorites.filter(c => c !== currency);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            render();
+        }
+
+        function render() {
+            renderQuickButtons();
+            renderFavorites();
+            renderConversionDetails();
+            renderResult();
+        }
+
+        function renderQuickButtons() {
+            const container = document.getElementById('quick-buttons');
+            let buttons = mainCurrencies.map(currency => `
+                <button onclick="selectCurrency('${currency}')" 
+                        class="btn ${selectedCurrency === currency ? 'selected' : ''}">
+                    <div class="code">${currency}</div>
+                    <div class="name">${allCurrencies[currency]}</div>
+                </button>
+            `);
+            
+            if (currentTravelCurrency) {
+                buttons.push(`
+                    <button onclick="selectCurrency('${currentTravelCurrency}')" 
+                            class="btn travel ${selectedCurrency === currentTravelCurrency ? 'selected' : ''}">
+                        <div class="code">${currentTravelCurrency}</div>
+                        <div class="name">Current Travel</div>
+                    </button>
+                `);
+            } else {
+                buttons.push(`
+                    <div class="btn" style="border: 2px dashed #d1d5db; background: #f9fafb; color: #9ca3af;">
+                        <div class="code">No Travel</div>
+                        <div class="name">Set one below</div>
+                    </div>
+                `);
+            }
+            
+            container.innerHTML = buttons.join('');
+        }
+
+        function renderFavorites() {
+            const section = document.getElementById('favorites-section');
+            const list = document.getElementById('favorites-list');
+            const toggle = document.getElementById('toggle-fav');
+            
+            if (favorites.length > 0) {
+                section.classList.remove('hidden');
+                toggle.textContent = showFavorites ? 'Hide' : 'Show';
+                
+                if (showFavorites) {
+                    list.innerHTML = favorites.map(currency => `
+                        <div class="fav-item">
+                            <button onclick="selectCurrency('${currency}')" 
+                                    class="fav-select ${selectedCurrency === currency ? 'selected' : ''}">
+                                ${currency}
+                            </button>
+                            <button onclick="removeFromFavorites('${currency}')" class="fav-remove">×</button>
+                        </div>
+                    `).join('');
+                    list.classList.remove('hidden');
+                } else {
+                    list.classList.add('hidden');
+                }
+            } else {
+                section.classList.add('hidden');
+            }
+        }
+
+        function renderConversionDetails() {
+            const directionBtn = document.getElementById('direction');
+            const amountLabel = document.getElementById('amount-label');
+            
+            directionBtn.textContent = convertToAUD ? 
+                `${selectedCurrency} → AUD` : 
+                `AUD → ${selectedCurrency}`;
+                
+            amountLabel.textContent = `Amount (${convertToAUD ? selectedCurrency : 'AUD'})`;
+        }
+
+        function renderResult() {
+            const result = getConversionResult();
+            const resultDiv = document.getElementById('result');
+            const detailsDiv = document.getElementById('details');
+            const rateInfo = document.getElementById('rate-info');
+            
+            if (convertToAUD) {
+                resultDiv.textContent = formatCurrency(result, 'AUD');
+                detailsDiv.textContent = `${formatCurrency(amount, selectedCurrency)} = ${formatCurrency(result, 'AUD')}`;
+            } else {
+                resultDiv.textContent = formatCurrency(result, selectedCurrency);
+                detailsDiv.textContent = `${formatCurrency(amount, 'AUD')} = ${formatCurrency(result, selectedCurrency)}`;
+            }
+            
+            if (rates[selectedCurrency]) {
+                rateInfo.textContent = `1 AUD = ${formatCurrency(rates[selectedCurrency].toFixed(4), selectedCurrency)}`;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('search').addEventListener('input', function(e) {
+            const term = e.target.value;
+            const resultsDiv = document.getElementById('search-results');
+            
+            if (!term.trim()) {
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+            
+            const filtered = Object.keys(allCurrencies).filter(code =>
+                code.toLowerCase().includes(term.toLowerCase()) ||
+                allCurrencies[code].toLowerCase().includes(term.toLowerCase())
+            ).slice(0, 8);
+            
+            if (filtered.length > 0) {
+                resultsDiv.innerHTML = filtered.map(currency => `
+                    <div class="result-item">
+                        <button onclick="selectCurrency('${currency}')" class="result-btn">
+                            <div class="code">${currency}</div>
+                            <div class="name">${allCurrencies[currency]}</div>
+                        </button>
+                        <div class="actions">
+                            <button onclick="setAsCurrentTravel('${currency}')" class="action-btn travel-btn">Travel</button>
+                            <button onclick="addToFavorites('${currency}')" class="action-btn fav-btn">★</button>
+                        </div>
+                    </div>
+                `).join('');
+                resultsDiv.classList.remove('hidden');
+            } else {
+                resultsDiv.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('direction').addEventListener('click', function() {
+            convertToAUD = !convertToAUD;
+            render();
+        });
+
+        document.getElementById('amount').addEventListener('input', function(e) {
+            amount = parseFloat(e.target.value) || 0;
+            render();
+        });
+
+        document.getElementById('refresh').addEventListener('click', async function() {
+            await fetchRates();
+            render();
+        });
+
+        document.getElementById('toggle-fav').addEventListener('click', function() {
+            showFavorites = !showFavorites;
+            render();
+        });
+
+        // Initialize
+        async function init() {
+            await fetchRates();
+            render();
+        }
+
+        init();
+    </script>
+</body>
+</html>
